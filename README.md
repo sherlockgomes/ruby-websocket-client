@@ -5,6 +5,9 @@ Uma gem Ruby robusta para comunicação WebSocket em tempo real com recursos ava
 ## 🚀 TechStack
 - Acompanhe o TECH_STACK.MD para entender tecnicamente o comportamento do código
 
+## 🚀 Build
+- Acompanhe o BUILD.MD para entender tecnicamente como criar uma nova versão da gem
+
 ## 🚀 Características
 
 - **Reconexão automática** com backoff exponencial (até 1000 tentativas)
