@@ -1,0 +1,80 @@
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+  TargetRubyVersion: 3.3
+
+# Desabilitar algumas regras muito restritivas para este projeto
+Metrics/ClassLength:
+  Max: 400
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+Metrics/BlockNesting:
+  Max: 4
+
+# Permitir require 'thread' para compatibilidade
+Lint/RedundantRequireStatement:
+  Exclude:
+    - 'lib/ruby_websocket_client/base_client.rb'
+
+# Permitir while true para loops de processamento
+Style/InfiniteLoop:
+  Exclude:
+    - 'lib/ruby_websocket_client/websocket_client.rb'
+
+# Permitir rescue modifier em alguns casos específicos
+Style/RescueModifier:
+  Exclude:
+    - 'lib/ruby_websocket_client/websocket_client.rb'
+    - 'websocket_client.rb'
+
+# Permitir begin/end em alguns casos
+Style/RedundantBegin:
+  Exclude:
+    - 'lib/ruby_websocket_client/websocket_client.rb'
+    - 'websocket_client.rb'
+
+# Permitir métodos sem super em casos específicos
+Lint/MissingSuper:
+  Exclude:
+    - 'lib/ruby_websocket_client/websocket_client.rb'
+    - 'websocket_client.rb'
+
+# Permitir métodos úteis mesmo que pareçam redundantes
+Lint/UselessMethodDefinition:
+  Exclude:
+    - 'test/client_test.rb'
+
+# Permitir documentação em português
+Style/Documentation:
+  Enabled: false
+
+
+# Configurações específicas para gemspec
+Gemspec/OrderedDependencies:
+  Enabled: false
+
+Gemspec/AddRuntimeDependency:
+  Enabled: false
+
+Gemspec/AttributeAssignment:
+  Enabled: false
+
+Gemspec/DeprecatedAttributeAssignment:
+  Enabled: false
+
+Gemspec/DevelopmentDependencies:
+  Enabled: false
+
+Gemspec/RequireMFA:
+  Enabled: false

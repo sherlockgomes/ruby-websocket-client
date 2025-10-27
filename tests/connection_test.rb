@@ -1,14 +1,12 @@
-require_relative '../websocket_client'
+# frozen_string_literal: true
 
-class ClientTest < WebSocketClient
-  def start
-    super
-  end
+require_relative '../lib/ruby_websocket_client/websocket_client'
 
+class ConnectionTest < RubyWebsocketClient::WebSocketClient
   private
 
   def url
-    ENV.fetch('HERMES_WS_URL')
+    ENV.fetch('WS_URL')
   end
 
   def handle_message(msg)
@@ -20,6 +18,6 @@ class ClientTest < WebSocketClient
   end
 
   def identifier
-    ENV.fetch('HERMES_WS_IDENTIFIER')
+    ENV.fetch('WS_IDENTIFIER')
   end
 end
