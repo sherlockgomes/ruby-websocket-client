@@ -34,12 +34,29 @@ module RubyWebsocketClient
         @stopping = false
         @max_retries_reached = false
 
+        em_setup_threadpool
+
         @event_thread = Thread.new { run_event_loop } # Loop principal do EventMachine
         @send_thread = Thread.new { process_send_queue } # Thread dedicada a enviar mensagens de forma assíncrona
         @health_thread = Thread.new { health_check_loop } # Loop de verificação de health check
 
         log "Cliente WebSocket iniciado com threads: event=#{@event_thread.object_id}, send=#{@send_thread.object_id}"
       end
+    end
+
+    # Configura o threadpool do EventMachine para otimizar o uso de recursos baseado no número de CPUs disponíveis
+    def em_setup_threadpool
+      # Detecta CPUs disponíveis (útil em containers)
+      nproc_output = `nproc 2>/dev/null`.strip
+      cpu_count = nproc_output.empty? ? 2 : Integer(nproc_output)
+
+      # Define limite proporcional ao número de CPUs: até 2 CPUs → 4 threads, depois 2x CPUs
+      EM.threadpool_size = cpu_count <= 2 ? 4 : [cpu_count * 2, 16].min
+
+      log! "EventMachine thread pool configurado com #{EM.threadpool_size} threads (#{cpu_count} CPUs detectadas)"
+    rescue StandardError => e
+      log! "Falha ao configurar threadpool: #{e.message}", level: :warn
+      EM.threadpool_size = 4
     end
 
     # Enfileira mensagem para envio com controle de limite

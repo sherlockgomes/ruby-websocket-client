@@ -7,13 +7,15 @@ require 'thread'
 require 'dotenv'
 require 'date'
 require 'json'
-require 'logger'
+
+require_relative 'base_logger'
 
 Dotenv.load
 
 module RubyWebsocketClient
   class BaseClient
     include Singleton
+    include BaseLogger
 
     private
 
@@ -24,10 +26,10 @@ module RubyWebsocketClient
 
       log 'Enviando pong response'
 
-      respond_ping!
+      pong!
     end
 
-    def respond_ping!
+    def pong!
       receivers = []
 
       receivers << {
@@ -50,26 +52,6 @@ module RubyWebsocketClient
           }.to_json
         )
       end
-    end
-
-    def logger
-      @logger ||= Logger.new($stdout)
-    end
-
-    def log(message, level: :info)
-      return unless log?
-
-      puts '*' * 100
-      logger.send(level, "[#{self.class.name}][#{Time.now.strftime('%H:%M:%S')}]:\n#{message}\n")
-    end
-
-    def log!(message, level: :info)
-      puts '*' * 100
-      logger.send(level, "[#{self.class.name}][#{Time.now.strftime('%H:%M:%S')}]:\n#{message}\n")
-    end
-
-    def log?
-      ENV.fetch('WS_LOG', 'false').downcase.eql?('true')
     end
 
     def headers
