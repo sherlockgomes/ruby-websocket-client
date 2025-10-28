@@ -7,6 +7,7 @@ require 'thread'
 require 'dotenv'
 require 'date'
 require 'json'
+require 'logger'
 
 Dotenv.load
 
@@ -31,12 +32,20 @@ module RubyWebsocketClient
       )
     end
 
+    def logger
+      @logger ||= Logger.new($stdout)
+    end
+
     def log(message, level: :info)
       return unless log?
 
       puts '*' * 100
-      puts "{#{level.upcase}}: [#{self.class.name}][#{Time.now.strftime('%H:%M:%S')}]:\n#{message}\n"
+      logger.send(level, "[#{self.class.name}][#{Time.now.strftime('%H:%M:%S')}]:\n#{message}\n")
+    end
+
+    def log!(message, level: :info)
       puts '*' * 100
+      logger.send(level, "[#{self.class.name}][#{Time.now.strftime('%H:%M:%S')}]:\n#{message}\n")
     end
 
     def log?

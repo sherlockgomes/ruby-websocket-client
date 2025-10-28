@@ -48,7 +48,7 @@ module RubyWebsocketClient
 
       @send_queue.push(message, true)
     rescue StandardError => e
-      log "Erro ao enfileirar mensagem: #{e.message}", level: :error
+      log! "Erro ao enfileirar mensagem: #{e.message}", level: :error
       handle_queue_overflow(message)
     end
 
@@ -121,7 +121,7 @@ module RubyWebsocketClient
             end
           end
         rescue StandardError => e
-          log "Erro ao aguardar thread #{thread.object_id}: #{e.message}"
+          log! "Erro ao aguardar thread #{thread.object_id}: #{e.message}"
         end
       end
 
@@ -207,7 +207,7 @@ module RubyWebsocketClient
         begin
           handle_ping(msg)
         rescue StandardError => e
-          log "Erro ao processar ping: Backtrace: #{e.backtrace.first(5).join("\n")}", level: :error
+          log! "Erro ao processar ping: Backtrace: #{e.backtrace.first(5).join("\n")}", level: :error
         end
 
         begin
@@ -215,7 +215,7 @@ module RubyWebsocketClient
             handle_message(msg)
           end
         rescue StandardError => e
-          log "Erro ao processar mensagem: Backtrace: #{e.backtrace.first(5).join("\n")}", level: :error
+          log! "Erro ao processar mensagem: Backtrace: #{e.backtrace.first(5).join("\n")}", level: :error
         end
       end
 
@@ -252,6 +252,10 @@ module RubyWebsocketClient
       end
     end
 
+    def can_send_message?
+      @connected && @ws && !@stopping
+    end
+
     # Thread dedicada a enviar mensagens de forma assíncrona
     def process_send_queue
       loop do
@@ -262,7 +266,7 @@ module RubyWebsocketClient
           msg = @send_queue.pop(1) # timeout de 1 segundo
           break if msg == :stop_signal || @stopping
 
-          if @connected && @ws && !@stopping
+          if can_send_message?
             @ws.send(msg)
           elsif !@stopping
             log 'Fila pausada — sem conexão ativa.'
@@ -298,14 +302,16 @@ module RubyWebsocketClient
           end
 
           if connected && queue_size > MAX_QUEUE_SIZE * 0.9
-            log "ALERTA: Fila crítica #{queue_size}/#{MAX_QUEUE_SIZE}", level: :error
+            log! "ALERTA: Fila crítica #{queue_size}/#{MAX_QUEUE_SIZE}", level: :error
           end
 
           if connected && last_msg && (Time.now - last_msg) > HEALTH_CHECK_INTERVAL
-            log "ALERTA: Sem mensagens há #{HEALTH_CHECK_INTERVAL} segundos", level: :warn
+            log! "ALERTA: Sem mensagens há #{HEALTH_CHECK_INTERVAL} segundos", level: :warn
           end
+
+          log! status.to_json
         rescue StandardError => e
-          log "Erro no health check: #{e.message}", level: :error
+          log! "Erro no health check: #{e.message}", level: :error
         end
       end
     end

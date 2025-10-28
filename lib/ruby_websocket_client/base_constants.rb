@@ -14,6 +14,6 @@ module RubyWebsocketClient
     QUEUE_OVERFLOW_STRATEGY = :drop_oldest # Remover a mensagem mais antiga da fila se a fila estiver cheia
     MAX_THREAD_WAIT_TIME = 10 # Tempo máximo para aguardar threads finalizarem
     THREAD_CLEANUP_INTERVAL = 30 # Intervalo para limpar threads
-    HEALTH_CHECK_INTERVAL = 300 # Intervalo para fazer o health check da conexão
+    HEALTH_CHECK_INTERVAL = 30 # Intervalo para fazer o health check da conexão
   end
 end
