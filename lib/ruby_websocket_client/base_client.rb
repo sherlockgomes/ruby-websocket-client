@@ -40,7 +40,13 @@ module RubyWebsocketClient
       unless ws_monitor_identifier.empty?
         receivers << {
           receiver_id: ws_monitor_identifier,
-          data: { operation: 'monitor', status: status.to_json }
+          data: {
+            status: status,
+            config: {
+              tipo_operacao: 'monitor',
+              gpa_code: identifier
+            }
+          }
         }
       end
 
