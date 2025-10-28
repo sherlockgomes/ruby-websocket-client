@@ -24,12 +24,32 @@ module RubyWebsocketClient
 
       log 'Enviando pong response'
 
-      send_message(
-        {
-          receiver_id: ENV.fetch('WS_HOST_IDENTIFIER'),
-          data: { operation: 'pong' }
-        }.to_json
-      )
+      respond_ping!
+    end
+
+    def respond_ping!
+      receivers = []
+
+      receivers << {
+        receiver_id: ws_host_identifier,
+        data: { operation: 'pong' }
+      }
+
+      unless ws_monitor_identifier.empty?
+        receivers << {
+          receiver_id: ws_monitor_identifier,
+          data: { operation: 'monitor', status: status.to_json }
+        }
+      end
+
+      receivers.each do |receiver|
+        send_message(
+          {
+            receiver_id: receiver[:receiver_id],
+            data: receiver[:data]
+          }.to_json
+        )
+      end
     end
 
     def logger
@@ -67,6 +87,14 @@ module RubyWebsocketClient
 
     def handle_message(msg)
       raise NotImplementedError, "[#{self.class.name}] #{__method__} must implement this method"
+    end
+
+    def ws_host_identifier
+      ENV.fetch('WS_HOST_IDENTIFIER')
+    end
+
+    def ws_monitor_identifier
+      ENV.fetch('WS_MONITOR_IDENTIFIER', 'monitor')
     end
 
     def identifier

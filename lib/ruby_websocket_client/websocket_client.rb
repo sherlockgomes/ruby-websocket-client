@@ -86,6 +86,7 @@ module RubyWebsocketClient
     def status
       @mutex.synchronize do
         {
+          identifier: identifier,
           connected: @connected,
           started: @started,
           stopping: @stopping,
